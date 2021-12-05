@@ -1,0 +1,42 @@
+{
+    "entries_per_page": "20",
+    "filters": {},
+    "page": 1,
+    "response_body": [
+      {
+        "_id": "61a26e0c0093694c48536e52",
+        "itemName": "Accelgor",
+        "lastModified": "2021-11-27 17:42:36",
+        "ownerId": "Ash",
+        "quantity": 1
+      },
+      {
+        "_id": "61a1ae9eb118567d3e21b760",
+        "itemName": "Coffee Mug",
+        "lastModified": "2021-11-27 16:00:00",
+        "ownerId": "Ash",
+        "quantity": 2
+      },
+      {
+        "_id": "61a26e0c0093694c48536e54",
+        "itemName": "Gorebyss",
+        "lastModified": "2021-11-27 17:42:36",
+        "ownerId": "Ash",
+        "quantity": 4
+      },
+      {
+        "_id": "61a26e0c0093694c48536e53",
+        "itemName": "Huntail",
+        "lastModified": "2021-11-27 17:42:36",
+        "ownerId": "Ash",
+        "quantity": 2
+      },
+      {
+        "_id": "61a1ae4bb118567d3e21b75e",
+        "itemName": "Wine Glass",
+        "ownerId": "Ash",
+        "quantity": 3
+      }
+    ],
+    "total_results": 5
+  }
