@@ -40,5 +40,5 @@
 
 1. Start the flask python application:  
     ```shell
-    streamlit run pokelit.py
+    streamlit run app/pokelit.py
     ```
