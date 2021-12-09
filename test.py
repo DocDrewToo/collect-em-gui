@@ -43,8 +43,30 @@ def data_scrubbing(input_json):
 
     print("scrubbed data", displayable_collection_data)
 
+def delete_by_item_name():
+    url = "http://127.0.0.1:5000/api/v1/item/delete"
+    headers = {"accept": "application/json", 
+    "Content-Type": "application/json"}
+    test_item = { "itemName": "Cup",
+                  "ownerId": "Andy"}
+    post_request = requests.delete(url, json = test_item, headers = headers)  
+    return post_request
+
+def update_item_by_name():
+    url = "http://127.0.0.1:5000/api/v1/item/update"
+    headers = {"accept": "application/json", 
+    "Content-Type": "application/json"}
+    test_item = { "itemName": "Gorebyss II",
+                  "ownerId": "Ash",
+                  "quantity": 4}
+    post_request = requests.patch(url, json = test_item, headers = headers)  
+    return post_request
+    
+
 # json = load_from_file()
 # json = collection_from_get_request()
 # data_scrubbing(json)
-add_new_item()
+# add_new_item()
+# delete_by_item_name()
+update_item_by_name()
 
