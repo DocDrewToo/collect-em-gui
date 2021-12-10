@@ -62,7 +62,7 @@ def collection_from_get_request(user):
     return json_response
 
         
-LOGO_IMAGE = "pokeball.jpg"
+LOGO_IMAGE = "app/pokeball.jpg"
 
 st.markdown(
     """
