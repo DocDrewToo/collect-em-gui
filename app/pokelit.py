@@ -1,6 +1,7 @@
 import streamlit as st
-import requests
+import requests as req
 import json
+import requests
 from PIL import Image
 import requests
 from io import BytesIO
@@ -9,10 +10,29 @@ from streamlit.type_util import Key
 from pagination import paginator
 from datetime import date
 import base64
-st.set_page_config(layout="wide")
-collection_api_url = "http://127.0.0.1:5000/api/v1/collection/"
-item_api_url = "http://127.0.0.1:5000/api/v1/item/"
+import json
+import os
+from datetime import datetime
+import pytz
+import sys
 
+st.set_page_config(layout="wide")
+
+def list_db_items(json_response):
+    # Cleans the data to be displayed in the table
+    # Removing items that we don't wish to be displayed
+    displayable_collection_data = []
+    for item in json_response["response_body"]:
+        item_details = {}
+        for key , value in item.items():
+            if key == "_id" or key == "lastModified":
+                continue
+            else:
+                item_details[key] = value
+        displayable_collection_data.append(item_details)
+    return displayable_collection_data
+
+        
 LOGO_IMAGE = "pokeball.jpg"
 
 st.markdown(
@@ -39,90 +59,96 @@ st.markdown(
     f"""
     <div class="container">
         <img class="logo-img" src="data:image/png;base64,{base64.b64encode(open(LOGO_IMAGE, "rb").read()).decode()}" width="150" height="150">
-        <p class="logo-text">Collect 'Em All!</p>
+        <p class="logo-text">Catch Em All!</p>
     </div>
     """,
     unsafe_allow_html=True
 )
 
 header = st.container() 
-dataset= st.container()
+
 features = st.container()
 model_training= st.container()
-col1, col2, col3  = st.columns(3)
-flight_list=st.container()
+dataset= st.container()
 
-# with header: 
-#     st.title('Welcome to the Collect them all!')
-
-
-# Before we can display or add any data 
-# we need to know the owner of the collection
-owner = st.text_input("Please enter your name (owner of the collection)", "Ash")
-st.button("Search", key=5)
-# Get the data to be displayed in the table
-payload = {"Owner":owner,"results_per_page":20}
-headers = {"accept": "application/json"}
-get_request_with_owner = requests.get(collection_api_url, payload, headers = headers)
-json_response = get_request_with_owner.json()
-
-
-# Cleans the data to be displayed in the table
-# Removing items that we don't wish to be displayed
-displayable_collection_data = []
-for item in json_response["response_body"]:
-    item_details = {}
-    for key , value in item.items():
-        if key == "_id" or key == "lastModified":
-            continue
-        else:
-            item_details[key] = value
-    displayable_collection_data.append(item_details)
-
-with st.expander("Collection List"):
-    st.header('Collection Info:')
-    st.dataframe(displayable_collection_data)
-
-
-st.header('Add New Items:')
-st.text('Please enter your itme info:')
-item_name_field = st.empty()
-item_name_txt = item_name_field.text_input("Item Name *Required",key = 0)
-item_quantity_field = st.empty()
-item_quantity = item_quantity_field.number_input("Item Quantity *Required", min_value = 0, step = 1, key = 1)
-
-custom_field_name = st.empty()
-custom_field_name_txt = custom_field_name.text_input("Custom Field *Optional", key=3)
-custom_field_value = st.empty()
-custom_field_value_txt = custom_field_value.text_input("Custom Field Value *Optional", key=4)
-
-add_button_clicked = st.button("Add", key=2)
-
-if add_button_clicked:
-
+with header: 
+    st.title('Welcome to the Catch them all!')
+    # st.text('Please enter your pokemon info:')
+option = st.selectbox(
+     'What would you like to do?',
+     ('---Choose an Option---', 'List Items', 'Add Item','Update Item', 'Delete Item'))
+    
+def delete_by_item_name(test_item):
+    url = "http://127.0.0.1:5000/api/v1/item/delete"
     headers = {"accept": "application/json", 
     "Content-Type": "application/json"}
-    print("Adding ITem")
-    if custom_field_name_txt > " ":
-        print("Name",custom_field_name_txt)
-        item_to_add = { "itemName": item_name_txt,
-                    "quantity": item_quantity,
-                    "ownerId": owner,
-                    custom_field_name_txt: custom_field_value_txt
-        }
+    post_request = requests.delete(url, json = test_item, headers = headers)  
+    return post_request
+
+def add_new_item(test_item):
+    url = "http://127.0.0.1:5000/api/v1/item/"
+    headers = {"accept": "application/json", 
+    "Content-Type": "application/json"}
+    post_request = requests.post(url, json = test_item, headers = headers)  
+    return post_request
+
+def update_item_by_name(test_item):
+    url = "http://127.0.0.1:5000/api/v1/item/update"
+    headers = {"accept": "application/json", 
+    "Content-Type": "application/json"}
+    post_request = requests.patch(url, json = test_item, headers = headers)  
+    return post_request
+
+def collection_from_get_request(user):
+    url = "http://127.0.0.1:5000/api/v1/collection/"
+    payload = {"Owner":user,"results_per_page":20}
+    headers = {"accept": "application/json"}
+    get_request_with_owner = requests.get(url, payload, headers = headers)
+    json_response = get_request_with_owner.json()
+    return json_response
+
+if option == 'List Items':
+    user_name_input = st.text_input("User")
+
+if option== 'Add Item' or option=='Delete Item' or option=='Update Item':
+    st.header('Item Info:')
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        user_name_input = st.text_input("User")
+    with col2:
+        item_name_input = st.text_input("Item Name")
+    if option== 'Add Item' or option=='Update Item':
+        with col3:
+            quantity_input = st.number_input("Quantity", step=1)
+    if option == 'Add Item':
+        col4, col5 = st.columns(2)
+        with col4:
+            new_field_name = st.text_input("New Field Name")
+        with col5:
+            new_field_value = st.text_input("New Field Value")
+
+if option != '---Choose an Option---' and st.button('Submit') :
+    if option== 'List Items':
+        collection_json = list_db_items(collection_from_get_request(user_name_input))
+        st.dataframe(collection_json)
+    elif option =="Add Item":
+        test_item={'ownerId': user_name_input,
+        'itemName': item_name_input,
+        'quantity': quantity_input,
+        new_field_name: new_field_value}
+        add_new_item(test_item)
+        st.write("Added Item: ", item_name_input, "for: ",user_name_input,"!" )
+    elif option =="Update Item":
+        test_item={'ownerId': user_name_input,
+        'itemName': item_name_input,
+        'quantity': quantity_input}
+        update_item_by_name(test_item)
+        st.write("Updated Item", item_name_input, " to new quantity: ", 
+        str(quantity_input), "for ",user_name_input,"!" )
     else:
-        item_to_add = { "itemName": item_name_txt,
-            "quantity": item_quantity,
-            "ownerId": owner
-        }
-    post_request = requests.post(item_api_url, json = item_to_add, headers = headers)  
-
-    # Clear entered values:
-    item_name_field.text_input("Item Name")
-    item_quantity_field.number_input("Item Quantity", min_value = 0, step = 1)
-    custom_field_name.text_input("Custom Name")
-    custom_field_value.text_input("Value")
-
-# icon("search")
-# selected = st.text_input("", "Search...")
-# button_clicked = st.button("OK")
+        test_item={'ownerId': user_name_input,
+        'itemName': item_name_input}
+        delete_by_item_name(test_item)
+        # post_request = requests.delete(url, json = test_item, headers = headers)
+        st.write("Deleted Item: ", item_name_input, "for: ",user_name_input,"!"  )
