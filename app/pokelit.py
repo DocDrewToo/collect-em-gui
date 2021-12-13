@@ -88,7 +88,7 @@ st.markdown(
     f"""
     <div class="container">
         <img class="logo-img" src="data:image/png;base64,{base64.b64encode(open(LOGO_IMAGE, "rb").read()).decode()}" width="150" height="150">
-        <p class="logo-text">Catch Em All!</p>
+        <p class="logo-text">Gotta Catch 'em All!</p>
     </div>
     """,
     unsafe_allow_html=True
@@ -101,7 +101,7 @@ model_training= st.container()
 dataset= st.container()
 
 with header: 
-    st.title("Welcome to Gotta Catch 'Em all!")
+    st.title("Welcome to Gotta Catch 'em all!")
 option = st.selectbox(
      'What would you like to do?',
      ('---Choose an Option---', 'List Items', 'Add Item','Update Item', 'Delete Item'))
