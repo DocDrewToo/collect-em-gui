@@ -32,25 +32,25 @@ def clean_data_for_display(json_response):
         displayable_collection_data.append(item_details)
     return displayable_collection_data
   
-def delete_by_item_name(test_item):
+def delete_by_item_name(collection_item):
     url = "http://127.0.0.1:5000/api/v1/item/delete"
     headers = {"accept": "application/json", 
     "Content-Type": "application/json"}
-    post_request = requests.delete(url, json = test_item, headers = headers)  
+    post_request = requests.delete(url, json = collection_item, headers = headers)  
     return post_request
 
-def add_new_item(test_item):
+def add_new_item(collection_item):
     url = "http://127.0.0.1:5000/api/v1/item/"
     headers = {"accept": "application/json", 
     "Content-Type": "application/json"}
-    post_request = requests.post(url, json = test_item, headers = headers)  
+    post_request = requests.post(url, json = collection_item, headers = headers)  
     return post_request
 
-def update_item_by_name(test_item):
+def update_item_by_name(collection_item):
     url = "http://127.0.0.1:5000/api/v1/item/update"
     headers = {"accept": "application/json", 
     "Content-Type": "application/json"}
-    post_request = requests.patch(url, json = test_item, headers = headers)  
+    post_request = requests.patch(url, json = collection_item, headers = headers)  
     return post_request
 
 def collection_from_get_request(user):
@@ -132,21 +132,32 @@ if option != '---Choose an Option---' and st.button('Submit') :
         collection_json = clean_data_for_display(collection_from_get_request(user_name_input))
         st.dataframe(collection_json)
     elif option =="Add Item":
-        test_item={'ownerId': user_name_input,
-        'itemName': item_name_input,
-        'quantity': quantity_input,
-        new_field_name: new_field_value}
-        add_new_item(test_item)
+        if new_field_name > "":
+            collection_item={'ownerId': user_name_input,
+            'itemName': item_name_input,
+            'quantity': quantity_input,
+            new_field_name: new_field_value}
+        else:
+            collection_item={'ownerId': user_name_input,
+            'itemName': item_name_input,
+            'quantity': quantity_input}
+        add_new_item(collection_item)
         st.write("Added Item: ", item_name_input, "for: ",user_name_input,"!" )
     elif option =="Update Item":
-        test_item={'ownerId': user_name_input,
-        'itemName': item_name_input,
-        'quantity': quantity_input}
-        update_item_by_name(test_item)
+        if new_field_name > "":
+            collection_item={'ownerId': user_name_input,
+            'itemName': item_name_input,
+            'quantity': quantity_input,
+            new_field_name: new_field_value}
+        else:
+            collection_item={'ownerId': user_name_input,
+            'itemName': item_name_input,
+            'quantity': quantity_input}
+        update_item_by_name(collection_item)
         st.write("Updated Item", item_name_input, " to new quantity: ", 
         str(quantity_input), "for ",user_name_input,"!" )
-    else:
-        test_item={'ownerId': user_name_input,
+    elif option =="Delete Item":
+        collection_item={'ownerId': user_name_input,
         'itemName': item_name_input}
-        delete_by_item_name(test_item)
+        delete_by_item_name(collection_item)
         st.write("Deleted Item: ", item_name_input, "for: ",user_name_input,"!"  )
