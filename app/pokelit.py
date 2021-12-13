@@ -144,15 +144,9 @@ if option != '---Choose an Option---' and st.button('Submit') :
         add_new_item(collection_item)
         st.write("Added Item: ", item_name_input, "for: ",user_name_input,"!" )
     elif option =="Update Item":
-        if new_field_name > "":
-            collection_item={'ownerId': user_name_input,
-            'itemName': item_name_input,
-            'quantity': quantity_input,
-            new_field_name: new_field_value}
-        else:
-            collection_item={'ownerId': user_name_input,
-            'itemName': item_name_input,
-            'quantity': quantity_input}
+        collection_item={'ownerId': user_name_input,
+        'itemName': item_name_input,
+        'quantity': quantity_input}
         update_item_by_name(collection_item)
         st.write("Updated Item", item_name_input, " to new quantity: ", 
         str(quantity_input), "for ",user_name_input,"!" )
